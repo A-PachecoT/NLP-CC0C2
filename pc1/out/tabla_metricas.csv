@@ -1,0 +1,4 @@
+Pipeline,Vocab Size,OOV Rate (%),Tokens totales
+Crudo,101,0.0,40140
+Normalizado,68,0.0,40140
+spaCy,69,0.0,40140
