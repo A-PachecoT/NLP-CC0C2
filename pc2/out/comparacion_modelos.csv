@@ -1,3 +1,3 @@
 Modelo,F1 Macro,ROC-AUC,Tiempo (s),Parámetros
-BoW + Logistic,1.0,1.0,0.012548542022705078,~5K features
-DistilBERT,1.0,1.0,85.5368287563324,135M params
+BoW + Logistic,1.0,1.0,0.010308504104614258,~5K features
+DistilBERT,1.0,1.0,91.3000259399414,135M params

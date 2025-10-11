@@ -1,4 +1,0 @@
-pandas
-matplotlib
-spacy
-numpy
