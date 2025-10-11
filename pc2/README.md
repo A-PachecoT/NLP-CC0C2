@@ -22,3 +22,7 @@ make verify-repro   # Verifica reproducibilidad
 - Baseline: BoW + Logistic Regression L2
 - Validación cruzada 5-fold
 - Curvas ROC y PR
+
+## Video
+
+https://drive.google.com/file/d/1jEa8OD9Jb0uJ02uPoWLRsJxRvA2v_The/view?usp=sharing
