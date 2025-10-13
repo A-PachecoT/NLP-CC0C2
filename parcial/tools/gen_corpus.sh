@@ -5,7 +5,7 @@ if [ -z "${SEED}" ] || [ -z "${SALT}" ]; then
   echo "Uso: $0 <SEED-decimal> <SALT-hex>" >&2; exit 1
 fi
 
-python - <<'PY' "$SEED" "$SALT"
+python3 - <<'PY' "$SEED" "$SALT"
 import hashlib, sys, random
 seed, salt = sys.argv[1], sys.argv[2]
 h = hashlib.sha256(f"{seed}-{salt}".encode()).hexdigest()

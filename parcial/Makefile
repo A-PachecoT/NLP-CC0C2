@@ -3,6 +3,9 @@
 
 .PHONY: deps build data tokenize train eval bench plot pack verify verify-corpus tag test test-idem clean distclean
 
+# Python command
+PYTHON ?= python3
+
 # Reproducibilidad
 SOURCE_DATE_EPOCH ?= 1700000000
 SEED ?= 42
@@ -17,8 +20,8 @@ DIM ?= 128
 
 deps:
 	@echo "Verificando dependencias preinstaladas (stdlib, numpy, torch opcional)"
-	@python -c "import numpy; print('numpy OK')" || echo "ERROR: numpy no encontrado"
-	@python -c "import torch; print('torch OK')" 2>/dev/null || echo "torch no disponible (opcional)"
+	@$(PYTHON) -c "import numpy; print('numpy OK')" || echo "ERROR: numpy no encontrado"
+	@$(PYTHON) -c "import torch; print('torch OK')" 2>/dev/null || echo "torch no disponible (opcional)"
 
 build:
 	@echo "Chequeos básicos"
@@ -39,23 +42,23 @@ verify-corpus:
 
 tokenize: data
 	@echo "Tokenizando corpus"
-	python src/tokenizer.py out/corpus.txt --output out/tokens.jsonl --vocab out/vocab.txt
+	$(PYTHON) src/tokenizer.py out/corpus.txt --output out/tokens.jsonl --vocab out/vocab.txt
 
 train: tokenize
 	@echo "Entrenando modelo"
-	python src/train.py --lr $(LR) --heads $(HEADS) --dim $(DIM) --input out/tokens.jsonl --output dist/model.tar.gz
+	$(PYTHON) src/train.py --lr $(LR) --heads $(HEADS) --dim $(DIM) --input out/tokens.jsonl --output dist/model.tar.gz
 
 eval: train
 	@echo "Evaluando métricas"
-	python src/eval.py dist/model.tar.gz --output out/metrics.json
+	$(PYTHON) src/eval.py dist/model.tar.gz --output out/metrics.json
 
 bench:
 	@echo "Benchmarking (3 repeticiones, reporte de sigma)"
-	python src/bench.py --n $(CONTEXT) --seed $(SEED_BENCH) --warmup 1 --reps 3 --output out/bench.csv
+	$(PYTHON) src/bench.py --n $(CONTEXT) --seed $(SEED_BENCH) --warmup 1 --reps 3 --output out/bench.csv
 
 plot: bench
 	@echo "Generando gráficos"
-	python src/plot.py out/bench.csv --output out/plot_latencia.png
+	$(PYTHON) src/plot.py out/bench.csv --output out/plot_latencia.png
 
 test:
 	@echo "Ejecutando tests"
@@ -73,7 +76,7 @@ test-idem:
 
 pack: eval bench plot
 	@echo "Capturando entorno"
-	python tools/capture_env.py > out/env.txt
+	$(PYTHON) tools/capture_env.py > out/env.txt
 	@echo "Empaquetando artefactos reproducibles"
 	find out -type f -print0 | xargs -0 touch -d "@$(SOURCE_DATE_EPOCH)"
 	rm -f dist/proy-v1.0.0.tar.gz

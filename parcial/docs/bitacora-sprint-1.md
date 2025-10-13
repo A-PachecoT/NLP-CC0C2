@@ -2,47 +2,73 @@
 **Inicio:** 2025-10-13
 **Miembro:** Andre Joaquin Pacheco Taboada
 
-## Comandos
+## Comandos ejecutados
 
 ### Setup inicial
 ```bash
-# Estructura creada
 mkdir -p parcial/{src,tools,tests,docs,out,dist}
 ```
 
 ### Configuración Makefile
-**Problema:** Heredoc Python en Makefile causaba error de sintaxis (línea 78: missing separator)
-**Causa:** Líneas dentro de heredoc `<<'PY'` tenían tabs, Makefile las interpretaba como comandos
-**Solución:** Extraer script Python a `tools/capture_env.py` separado
+**Problema:** Heredoc Python causaba error "missing separator" (línea 78)
+**Solución:** Extraer a `tools/capture_env.py` separado
 
-```python
-# tools/capture_env.py - Captura entorno de forma limpia
-# Evita problemas de indentación en Makefile
-```
-
-**Resultado:** Makefile simplificado, más mantenible
-
-### Generación de corpus
+### Pipeline completo
 ```bash
+# 1. Verificar dependencias
+$ make deps
+Verificando dependencias preinstaladas (stdlib, numpy, torch opcional)
+numpy OK
+torch OK
+
+# 2. Generar corpus sintetico reproducible
 $ make data
 Generando corpus sintético
-# Corpus generado: out/corpus.txt (50,000 palabras)
-# Hash guardado: out/corpus_sha256.txt
+./tools/gen_corpus.sh 42 1a2b3c4d5e6f7890abcdef1234567890 > out/corpus.txt
+echo "Comando: ./tools/gen_corpus.sh 42 1a2b3c4d5e6f7890abcdef1234567890" > out/seed.txt
+sha256sum out/corpus.txt | awk '{print $1}' > out/corpus_sha256.txt
 
+# 3. Verificar hash del corpus
 $ make verify-corpus
 Verificando hash del corpus
-# ✅ Hash verificado correctamente
+HGEN="$(./tools/gen_corpus.sh 42 1a2b3c4d5e6f7890abcdef1234567890 | sha256sum | awk '{print $1}')"; \
+        HSAVED="$(cat out/corpus_sha256.txt)"; test "$HGEN" = "$HSAVED"
+
+# 4. Tokenizar
+$ make tokenize
+Generando corpus sintético
+./tools/gen_corpus.sh 42 1a2b3c4d5e6f7890abcdef1234567890 > out/corpus.txt
+echo "Comando: ./tools/gen_corpus.sh 42 1a2b3c4d5e6f7890abcdef1234567890" > out/seed.txt
+sha256sum out/corpus.txt | awk '{print $1}' > out/corpus_sha256.txt
+Tokenizando corpus
+python src/tokenizer.py out/corpus.txt --output out/tokens.jsonl --vocab out/vocab.txt
+Vocab size: 1004
+Total tokens: 50000
+Unique tokens: 1000
 ```
 
-**Hash SHA-256:** Ver `out/corpus_sha256.txt`
+### Tokenizer básico
+**Problema 1:** Alias `cd="z"` (zoxide) rompía comandos Bash no-interactivos
+**Solución:** Modificar `~/.zshrc` con `[[ -o interactive ]] && alias cd="z"`
+
+**Problema 2:** Makefile usa `python` pero sistema tiene `python3`
+**Solución:** Variable `PYTHON ?= python3` en Makefile, usar `$(PYTHON)` en todos los targets
+
+```bash
+$ make tokenize
+Vocab size: 1004
+Total tokens: 50000
+Unique tokens: 1000
+```
 
 ## Estado actual
-- ✅ Estructura de carpetas creada
-- ✅ Makefile funcional (workaround: capture_env.py separado)
-- ✅ gen_corpus.sh implementado con SEED+SALT
-- ✅ .gitattributes configurado (LF normalizado)
-- ✅ Corpus generado y verificado reproducible
+- ✅ Setup completo (estructura, Makefile, gitattributes)
+- ✅ Corpus reproducible (SEED+SALT, hash verificado)
+- ✅ README.md con tabla variable→efecto
+- ✅ Tokenizer básico funcionando (vocab + jsonl)
+- ✅ Fix dotfiles zoxide para shells no-interactivos
+- ✅ Fix Makefile python→python3
 
-**Próximos pasos:** Implementar tokenizer básico, luego Mini-Transformer
+**Próximos pasos:** Mini-Transformer (attention, RoPE, training loop)
 
-**Fin:** 2025-10-13 [sprint 1 completado - setup]
+**Fin:** 2025-10-13 [sprint 1 completado - setup + tokenizer]
