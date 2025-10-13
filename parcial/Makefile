@@ -72,26 +72,13 @@ test-idem:
 
 pack: eval bench plot
 	@echo "Capturando entorno"
-	{ \
-	  echo "DATE=$$(date -u +%FT%TZ)"; \
-	  python - <<'PY' || true
-import platform, sys
-print("PYTHON", sys.version.replace("\n"," "))
-try:
-    import numpy as np; print("NUMPY", np.__version__)
-except Exception: print("NUMPY none")
-try:
-    import torch; print("TORCH", torch.__version__)
-except Exception: print("TORCH none")
-print("PLATFORM", platform.platform())
-PY
-	} > out/env.txt
+	python tools/capture_env.py > out/env.txt
 	@echo "Empaquetando artefactos reproducibles"
 	find out -type f -print0 | xargs -0 touch -d "@$(SOURCE_DATE_EPOCH)"
 	rm -f dist/proy-v1.0.0.tar.gz
 	tar --sort=name --mtime="@$(SOURCE_DATE_EPOCH)" --owner=0 --group=0 --numeric-owner \
-	    -czf dist/proy-v1.0.0.tar.gz out/ \
-	    --exclude='out/session.typescript' --exclude='out/terminal.cast' --exclude='out/*.png~'
+		-czf dist/proy-v1.0.0.tar.gz out/ \
+		--exclude='out/session.typescript' --exclude='out/terminal.cast' --exclude='out/*.png~'
 	sha256sum dist/proy-v1.0.0.tar.gz | awk '{print $$1"  "$$2}' > out/HASHES.md
 
 verify:
