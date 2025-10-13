@@ -17,7 +17,8 @@ DIM ?= 128
 
 deps:
 	@echo "Verificando dependencias preinstaladas (stdlib, numpy, torch opcional)"
-	python -c "import numpy; try: import torch; except: print('Torch no disponible')" || true
+	@python -c "import numpy; print('numpy OK')" || echo "ERROR: numpy no encontrado"
+	@python -c "import torch; print('torch OK')" 2>/dev/null || echo "torch no disponible (opcional)"
 
 build:
 	@echo "Chequeos básicos"
