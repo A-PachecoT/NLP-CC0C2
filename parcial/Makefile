@@ -60,6 +60,14 @@ plot: bench
 	@echo "Generando gráficos"
 	$(PYTHON) src/plot.py out/bench.csv --output out/plot_latencia.png
 
+bench-quant: train
+	@echo "Benchmarking cuantizacion FP32/Int8/Int4"
+	$(PYTHON) src/bench_quant.py --model dist/model.tar.gz --length 50 --reps 3 --output out/bench_quant.csv
+
+plot-quant: bench-quant
+	@echo "Generando graficos de cuantizacion"
+	$(PYTHON) src/plot_quant.py out/bench_quant.csv --output out/plot_quant.png
+
 test:
 	@echo "Ejecutando tests"
 	pytest tests/ --cov=src --cov-report=term-missing || bats tests/ || true
