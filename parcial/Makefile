@@ -52,9 +52,9 @@ eval: train
 	@echo "Evaluando métricas"
 	$(PYTHON) src/eval.py dist/model.tar.gz --output out/metrics.json
 
-bench:
-	@echo "Benchmarking (3 repeticiones, reporte de sigma)"
-	$(PYTHON) src/bench.py --n $(CONTEXT) --seed $(SEED_BENCH) --warmup 1 --reps 3 --output out/bench.csv
+bench: train
+	@echo "Benchmarking KV-cache (3 repeticiones)"
+	$(PYTHON) src/bench.py --model dist/model.tar.gz --n 50 --seed $(SEED_BENCH) --warmup 1 --reps 3 --output out/bench.csv
 
 plot: bench
 	@echo "Generando gráficos"

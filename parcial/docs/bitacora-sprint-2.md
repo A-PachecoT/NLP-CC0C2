@@ -44,7 +44,7 @@ Loss: 6.95
 Metricas guardadas en out/metrics.json
 
 $ make bench
-Benchmark: n=512, reps=3, warmup=1
+Benchmark: n=512, reps=3, warmup=1 (simulacion numpy)
 Sin cache: 0.05ms ± 0.00ms
 Con cache: 0.02ms ± 0.00ms
 
@@ -66,10 +66,11 @@ Grafico guardado en out/plot_latencia.png
 - **Loss:** 6.95
 - **Test tokens:** 10000 (ultimos 20% del corpus)
 
-### Benchmarks
-- **Sin KV-cache:** 0.05ms ± 0.00ms
-- **Con KV-cache:** 0.02ms ± 0.00ms
-- **Speedup:** 2x (simulado)
+### Benchmarks (simulacion)
+- **Sin KV-cache:** 0.05ms ± 0.00ms (multiplicacion matrices numpy)
+- **Con KV-cache:** 0.02ms ± 0.00ms (50% simulado)
+- **Speedup:** 2x
+- **Nota:** Benchmarks simulados, no usan generacion autoregresiva real
 
 ## Estado actual
 - ✅ Mini-Transformer funcionando (attention + FFN + LayerNorm)
@@ -79,6 +80,6 @@ Grafico guardado en out/plot_latencia.png
 - ✅ Bench con repeticiones y sigma
 - ✅ Pipeline completo: tokenize → train → eval → bench → plot
 
-**Proximos pasos:** KV-cache real + cuantizacion Int8/Int4
+**Proximos pasos:** Generacion autoregresiva + KV-cache real + cuantizacion Int8/Int4
 
 **Fin:** 2025-10-15 [sprint 2 completado - mini-transformer]
