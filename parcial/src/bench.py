@@ -45,9 +45,13 @@ if __name__ == '__main__':
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
 
+    # Configuracion determinista
+    torch.manual_seed(args.seed)
+    torch.use_deterministic_algorithms(True)
+    torch.set_num_threads(1)
+
     # Device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    torch.manual_seed(args.seed)
 
     print(f"Benchmark: length={args.n}, reps={args.reps}, warmup={args.warmup}")
 

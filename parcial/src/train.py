@@ -117,7 +117,13 @@ if __name__ == '__main__':
     parser.add_argument('--dim', type=int, default=128)
     parser.add_argument('--steps', type=int, default=100)
     parser.add_argument('--pos', default='rope', choices=['rope', 'sinusoidal'])
+    parser.add_argument('--seed', type=int, default=42, help='Seed para reproducibilidad')
     args = parser.parse_args()
+
+    # Configuracion determinista
+    torch.manual_seed(args.seed)
+    torch.use_deterministic_algorithms(True)
+    torch.set_num_threads(1)
 
     # Device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

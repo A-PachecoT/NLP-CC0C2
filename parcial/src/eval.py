@@ -72,7 +72,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model', help='Modelo .tar.gz')
     parser.add_argument('--output', required=True, help='Archivo metrics.json')
+    parser.add_argument('--seed', type=int, default=42, help='Seed para reproducibilidad')
     args = parser.parse_args()
+
+    # Configuracion determinista
+    torch.manual_seed(args.seed)
+    torch.use_deterministic_algorithms(True)
+    torch.set_num_threads(1)
 
     # Device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
