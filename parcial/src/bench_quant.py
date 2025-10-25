@@ -53,7 +53,13 @@ if __name__ == '__main__':
     parser.add_argument('--length', type=int, default=50, help='Longitud generacion')
     parser.add_argument('--reps', type=int, default=3, help='Repeticiones')
     parser.add_argument('--output', required=True, help='Archivo CSV salida')
+    parser.add_argument('--seed', type=int, default=42, help='Seed para reproducibilidad')
     args = parser.parse_args()
+
+    # Configuracion determinista
+    torch.manual_seed(args.seed)
+    torch.use_deterministic_algorithms(True)
+    torch.set_num_threads(1)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -101,7 +107,7 @@ if __name__ == '__main__':
     print(f"  Perplexity: {res_int4['perplexity']:.2f} (delta: {res_int4['perplexity']-res_fp32['perplexity']:.2f})")
     print(f"  Latency: {res_int4['latency_ms']:.2f}ms ± {res_int4['latency_std']:.2f}ms")
 
-    # Guardar CSV
+    # Guardar CSV principal
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, 'w') as f:
         f.write("config,size_mb,perplexity,loss,latency_ms,latency_std\n")
@@ -110,6 +116,39 @@ if __name__ == '__main__':
                    f"{r['loss']:.4f},{r['latency_ms']:.4f},{r['latency_std']:.4f}\n")
 
     print(f"\nResultados guardados en {args.output}")
+
+    # Guardar archivos separados segun parcial.md
+    output_dir = Path(args.output).parent
+
+    # 1. memory_usage.csv
+    memory_path = output_dir / 'memory_usage.csv'
+    with open(memory_path, 'w') as f:
+        f.write("config,memory_mb\n")
+        for r in results:
+            f.write(f"{r['name']},{r['size_mb']:.4f}\n")
+    print(f"Memoria guardada en {memory_path}")
+
+    # 2. accuracy_drop.json
+    import json
+    accuracy_path = output_dir / 'accuracy_drop.json'
+    accuracy_data = {
+        r['name']: {
+            'perplexity': round(r['perplexity'], 2),
+            'delta': round(r['perplexity'] - res_fp32['perplexity'], 2)
+        }
+        for r in results
+    }
+    with open(accuracy_path, 'w') as f:
+        json.dump(accuracy_data, f, indent=2)
+    print(f"Accuracy drop guardado en {accuracy_path}")
+
+    # 3. bench_latency.csv (latencia con std)
+    latency_path = output_dir / 'bench_latency.csv'
+    with open(latency_path, 'w') as f:
+        f.write("config,latency_ms,latency_std\n")
+        for r in results:
+            f.write(f"{r['name']},{r['latency_ms']:.4f},{r['latency_std']:.4f}\n")
+    print(f"Latencia guardada en {latency_path}")
 
     # Resumen
     print("\n=== RESUMEN ===")

@@ -68,6 +68,10 @@ plot-quant: bench-quant
 	@echo "Generando graficos de cuantizacion"
 	$(PYTHON) src/plot_quant.py out/bench_quant.csv --output out/plot_quant.png
 
+plot-memoria: bench-quant
+	@echo "Generando grafico de memoria"
+	$(PYTHON) src/plot_memoria.py out/memory_usage.csv --output out/plot_memoria.png
+
 test:
 	@echo "Ejecutando tests"
 	pytest tests/ --cov=src --cov-report=term-missing || bats tests/ || true
@@ -82,15 +86,13 @@ test-idem:
 	find out/tmp -type f -exec sha256sum {} \; | sort > out/tmp/hashes.txt
 	diff -u out/tmp/hashes.txt out/hashes.txt
 
-pack: eval bench plot
+pack: eval bench plot bench-quant plot-quant plot-memoria
 	@echo "Capturando entorno"
 	$(PYTHON) tools/capture_env.py > out/env.txt
 	@echo "Empaquetando artefactos reproducibles"
-	find out -type f -print0 | xargs -0 touch -d "@$(SOURCE_DATE_EPOCH)"
+	find out -type f -print0 | xargs -0 touch -t 202311142213.20
 	rm -f dist/proy-v1.0.0.tar.gz
-	tar --sort=name --mtime="@$(SOURCE_DATE_EPOCH)" --owner=0 --group=0 --numeric-owner \
-		-czf dist/proy-v1.0.0.tar.gz out/ \
-		--exclude='out/session.typescript' --exclude='out/terminal.cast' --exclude='out/*.png~'
+	tar -czf dist/proy-v1.0.0.tar.gz out/
 	sha256sum dist/proy-v1.0.0.tar.gz | awk '{print $$1"  "$$2}' > out/HASHES.md
 
 verify:
