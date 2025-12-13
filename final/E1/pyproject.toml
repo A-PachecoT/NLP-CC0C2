@@ -1,0 +1,21 @@
+[project]
+name = "qa-agent-e1"
+version = "0.1.0"
+description = "Multi-Agent QA System - E1 Baseline"
+requires-python = ">=3.10"
+dependencies = [
+    "langgraph>=0.2.0",
+    "langchain>=0.3.0",
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
