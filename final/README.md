@@ -69,12 +69,13 @@ Critic: ✅ APPROVED (grounded: true, accurate: true)
 - [x] Grafo Manager → Retriever → Worker → Synthesizer
 - [x] Logging JSON
 - [x] Informe 2-3 págs
-- [x] Video 
+- [x] Video 5-8 min
+
 ### E2 (20 dic)
-- [ ] Nodo Critic
-- [ ] Chain-of-thought + Self-consistency
-- [ ] Benchmark comparativo
-- [ ] Informe 6-10 págs
+- [x] Nodo Critic
+- [x] Chain-of-thought + Self-consistency
+- [x] Benchmark comparativo
+- [x] Informe 6-10 págs
 - [ ] Video + exposición
 
 ## Estructura
