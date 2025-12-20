@@ -1,0 +1,18 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "qa_agent_critic": {
+      "path": "src.graph:graph",
+      "description": "Multi-Agent QA System con Manager, Retriever, Worker, Synthesizer y Critic"
+    }
+  },
+  "env": "../.env",
+  "http": {
+    "cors": {
+      "allow_origins": ["*"],
+      "allow_credentials": true,
+      "allow_methods": ["*"],
+      "allow_headers": ["*"]
+    }
+  }
+}
